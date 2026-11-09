@@ -288,7 +288,9 @@
 				hide_linenumber: <?php echo $options->get('argon_code_highlight_hide_linenumber', 'false') === 'true' ? 'true' : 'false'; ?>,
 				transparent_linenumber: <?php echo $options->get('argon_code_highlight_transparent_linenumber', 'false') === 'true' ? 'true' : 'false'; ?>,
 				break_line: <?php echo $options->get('argon_code_highlight_break_line', 'false') === 'true' ? 'true' : 'false'; ?>
-			}
+			},
+			headindex_css_url: "<?php echo esc_js(\\ArgonModern\\Assets::get_asset_uri('/assets/vendor/headindex/headindex.css')); ?>",
+			headindex_js_url: "<?php echo esc_js(\\ArgonModern\\Assets::get_asset_uri('/assets/vendor/headindex/headindex.js')); ?>"
 		}
 	</script>
 	<?php if ($options->get('argon_math_render') == 'mathjax3') { ?>
