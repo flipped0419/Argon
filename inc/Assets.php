@@ -23,7 +23,6 @@ class Assets {
 		wp_register_style( 'izitoast', self::get_asset_uri( '/assets/vendor/izitoast/css/iziToast.css' ), [], $version );
 		wp_register_style( 'glightbox', self::get_asset_uri( '/assets/vendor/glightbox/glightbox.min.css' ), [], $version );
 		wp_register_style( 'nprogress', self::get_asset_uri( '/assets/vendor/nprogress/nprogress.css' ), [], $version );
-		wp_register_style( 'headindex', self::get_asset_uri( '/assets/vendor/headindex/headindex.css' ), [], $version );
 		wp_register_style( 'argon-nouislider', self::get_asset_uri( '/assets/vendor/nouislider/css/nouislider.min.css' ), [], $version );
 		wp_register_style( 'argon-pickr-monolith', self::get_asset_uri( '/assets/vendor/pickr/themes/monolith.min.css' ), [], $version );
 
@@ -36,8 +35,7 @@ class Assets {
 			wp_enqueue_style( 'googlefont', '//fonts.googleapis.com/css?family=Open+Sans:400,600,700|Noto+Serif+SC:600&display=swap', [], null );
 		}
 
-		// Conditional Styles
-		wp_enqueue_style( 'headindex' );
+		// HeadIndex CSS is loaded on demand when an article catalog is present.
 
 		if ( $options->get( 'enable_fancybox' ) != 'false' ) {
 			wp_enqueue_style( 'glightbox' );
@@ -71,8 +69,7 @@ class Assets {
 			wp_enqueue_script( 'pjax' );
 		}
 
-		wp_register_script( 'headindex', self::get_asset_uri( '/assets/vendor/headindex/headindex.js' ), [ 'jquery' ], $version, true );
-		wp_enqueue_script( 'headindex' );
+		// HeadIndex JS is loaded on demand by catalogInit(), including after PJAX navigation.
 
 		if ( $options->get( 'enable_fancybox' ) != 'false' ) {
 			wp_register_script( 'glightbox', self::get_asset_uri( '/assets/vendor/glightbox/js/glightbox.min.js' ), [], $version, true );
@@ -127,7 +124,6 @@ class Assets {
 		if ( $options->get( 'enable_pjax' ) != 'false' ) {
 			$theme_deps[] = 'pjax';
 		}
-		$theme_deps[] = 'headindex';
 		if ( $options->get( 'argon_enable_code_highlight' ) == 'true' ) {
 			$theme_deps[] = 'argon-highlight';
 			$theme_deps[] = 'argon-highlight-ln';
