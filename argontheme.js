@@ -2603,18 +2603,65 @@ function startTypeEffect($element, text, interval){
 	}
 }();
 
-/*文章目录*/
+/*文章目录：仅在页面确实包含目录时按需加载，兼容 PJAX 页面切换*/
 function catalogInit(){
-	if ($("#leftbar_catalog").length > 0 && typeof $.fn.headIndex !== "undefined"){
-		$(document).headIndex({
-			articleWrapSelector: '#post_content',
-			indexBoxSelector: '#leftbar_catalog',
-			subItemBoxClass: "index-subItem-box",
-			itemClass: "index-item",
-			linkClass: "index-link",
-			offset: 80,
-		});
+	if ($("#leftbar_catalog").length === 0){
+		return;
 	}
+
+	function initializeCatalog(){
+		if (typeof $.fn.headIndex === "function"){
+			$(document).headIndex({
+				articleWrapSelector: '#post_content',
+				indexBoxSelector: '#leftbar_catalog',
+				subItemBoxClass: "index-subItem-box",
+				itemClass: "index-item",
+				linkClass: "index-link",
+				offset: 80,
+			});
+		}
+	}
+
+	if (typeof $.fn.headIndex === "function"){
+		initializeCatalog();
+		return;
+	}
+
+	if (window.argonHeadIndexPromise){
+		window.argonHeadIndexPromise.then(initializeCatalog);
+		return;
+	}
+
+	var cssUrl = argonConfig.headindex_css_url;
+	var jsUrl = argonConfig.headindex_js_url;
+	if (!cssUrl || !jsUrl){
+		console.warn("HeadIndex asset URLs are unavailable; article catalog was not initialized.");
+		return;
+	}
+
+	window.argonHeadIndexPromise = new Promise(function(resolve, reject){
+		if (!document.querySelector('link[data-argon-headindex]')){
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = cssUrl;
+			link.setAttribute('data-argon-headindex', 'true');
+			document.head.appendChild(link);
+		}
+
+		var script = document.createElement('script');
+		script.src = jsUrl;
+		script.async = true;
+		script.onload = resolve;
+		script.onerror = function(){
+			reject(new Error('Failed to load HeadIndex script'));
+		};
+		document.head.appendChild(script);
+	});
+
+	window.argonHeadIndexPromise.then(initializeCatalog).catch(function(error){
+		window.argonHeadIndexPromise = null;
+		console.warn("HeadIndex lazy load failed:", error);
+	});
 }
 catalogInit();
 
